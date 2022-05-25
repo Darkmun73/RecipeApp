@@ -223,24 +223,24 @@ public:
 		//}
 	}
 
-	void getRecipe()
+	void recipeOut()
 	{
-		size_t sizeOfSteps = sizeof(_steps) / sizeof(_steps[0]);  //либо надо проверить пустой ли steps?
-		if ((arraySize(nameOfAllIngredientsInGramms) == 0) || _steps.size() = 0)
+		//size_t sizeOfSteps = sizeof(_steps) / sizeof(_steps[0]);  //либо надо проверить пустой ли steps?
+		if (_ingredientsInGramms.empty() || _ingredientsInNumber.empty() || _steps.empty())
 		{
 			std::cout << "Ошибка: у рецепта не заданы ингредиенты или шаги приготовления";
 		}
 		else
 		{
 			std::cout << "Используемые ингредиетнты: ";
-			for (size_t i = 0; i < arraySize(nameOfAllIngredientsInGramms); i++)
+			for (size_t i = 0; i < _ingredientsInGramms.size(); i++)
 			{
 				_ingredientsInGramms[i].getIngredient();
 			}
 			std::cout << "Шаги приготовления: " << std::endl;
-			for (size_t i = 0; i < sizeOfSteps; i++)
+			for (size_t i = 0; i < _steps.size(); i++)
 			{
-				std::cout << i << ". " << steps[i] << std::endl;
+				std::cout << i << ". " << _steps[i] << std::endl;
 			}
 		}
 	}
