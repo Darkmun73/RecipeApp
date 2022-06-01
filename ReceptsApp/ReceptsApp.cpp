@@ -88,7 +88,7 @@ public:
 		//_category = it1->first;
 	}
 
-	void getIngredient()
+	void ingredientOut()
 	{
 		std::cout << std::endl << _name << std::endl << _category << std::endl;
 	}
@@ -193,7 +193,7 @@ public:
 
 			if (error == true)
 			{
-				std::cout << "Ошибка: bad input";
+				std::cout << "Ошибка: bad input" << std::endl;
 			}
 
 			/*error = false;
@@ -228,14 +228,14 @@ public:
 		//size_t sizeOfSteps = sizeof(_steps) / sizeof(_steps[0]);  //либо надо проверить пустой ли steps?
 		if (_ingredientsInGramms.empty() || _ingredientsInNumber.empty() || _steps.empty())
 		{
-			std::cout << "Ошибка: у рецепта не заданы ингредиенты или шаги приготовления";
+			std::cout << "Ошибка: у рецепта не заданы ингредиенты или шаги приготовления" << std::endl;
 		}
 		else
 		{
 			std::cout << "Используемые ингредиетнты: ";
 			for (size_t i = 0; i < _ingredientsInGramms.size(); i++)
 			{
-				_ingredientsInGramms[i].getIngredient();
+				_ingredientsInGramms[i].ingredientOut();
 			}
 			std::cout << "Шаги приготовления: " << std::endl;
 			for (size_t i = 0; i < _steps.size(); i++)
@@ -252,8 +252,8 @@ int main()
 	Recipe Tort;
 	Tort.setNumberOfSteps(1);
 	Tort.setSteps({ "asdasd" });
-	Tort.addIngredient("Молоко");
-	Tort.getRecipe();
+	Tort.addIngredient("Moloko");
+	Tort.recipeOut();
 	//muka.setNumberOfSteps(4);
 	//muka.setSteps();
 	return 0;
