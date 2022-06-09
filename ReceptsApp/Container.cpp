@@ -19,18 +19,18 @@ class Container
 
 private:
 	//не лучше ли структуру написать вне класса?
-	struct Elem //ýëåìåíò ñïèñêà
+	struct Elem //элемент списка
 	{
 		T _value;
-		Elem* _next; //ñëåä ýëåìåíò ñïèñêà
-		Elem* _prev; //ïðåä ýëåìåíò ñïèñêà
+		Elem* _next; //след элемент списка
+		Elem* _prev; //пред элемент списка
 		Elem() : _value(0), _next(nullptr), _prev(nullptr) {}
 		Elem(T value, Elem* prev, Elem* next) : _value(value), _prev(prev), _next(next) {};
 	};
 	Elem* head;
 	Elem* tail;
 
-	////èòåðàòîð - public èëè private?
+	////итератор - public или private?
 	//class Iterator
 	//{
 
@@ -39,13 +39,13 @@ private:
 public:
 	Container() : head(nullptr), tail(nullptr) {};
 
-	Container(const T& value)  //èíèöèàëèçàöèÿ êîíòåéíåðà ñ îäíèì ýëåìåíòîì ñî çíà÷åíèå value
+	Container(const T& value)  //конструктор создающий список с одним элементом со значением value
 	{
 		head = new Elem(value, nullptr, nullptr);
 		tail = head;
 	}
 
-	Container(const Container& contCopy) //êîíñòðóêòîð êîïèðîâàíèÿ
+	Container(const Container& contCopy) //конструктор копирования
 	{
 		tail = head = nullptr;
 		Elem* cur = contCopy.head;
@@ -54,7 +54,7 @@ public:
 			push_back(cur->_value);
 			cur = cur->_next;
 		}
-		delete cur; //åñòü ëè ñìûñë óäàëÿòü, åñëè cur è òàê óæå nullptr?
+		delete cur; //нужно ли удалять cur, если он и так nullptr?
 	}
 
 	~Container()
