@@ -1,7 +1,8 @@
 ﻿#include <iostream>
 #include <vector>
 #include <string>
-#include <map>
+#include "Container.cpp"
+
 
 template<typename T, size_t n>
 inline size_t arraySize(const T(&arr)[n])
@@ -253,6 +254,7 @@ public:
 int main()
 {
 	setlocale(LC_ALL, "ru");
+	auto a = 5;
 	Recipe Tort;
 	Tort.setNumberOfSteps(1);
 	Tort.setSteps({ "asdasd" });
