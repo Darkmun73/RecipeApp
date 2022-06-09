@@ -142,6 +142,7 @@
     <ClCompile Include="Container.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdc17</LanguageStandard_C>
+      <UseUnicodeForAssemblerListing Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseUnicodeForAssemblerListing>
     </ClCompile>
     <ClCompile Include="ReceptsApp.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
