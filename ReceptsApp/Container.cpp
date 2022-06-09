@@ -45,16 +45,21 @@ public:
 		tail = head;
 	}
 
-	Container(const Container& contCopy) //конструктор копирования
+	Container(const Container& ctorCopy) //конструктор копирования
 	{
 		tail = head = nullptr;
-		Elem* cur = contCopy.head;
+		Elem* cur = ctorCopy.head;
 		while (cur)
 		{
 			push_back(cur->_value);
 			cur = cur->_next;
 		}
 		delete cur; //нужно ли удалять cur, если он и так nullptr?
+	}
+
+	Container(Container&& ctorMove) : head(ctorMove.head), tail(ctorMove.tail) //конструктор перемещения
+	{
+		ctorMove.tail = ctorMove.head = nullptr;
 	}
 
 	~Container()
@@ -67,14 +72,22 @@ public:
 		}
 	}
 
-	Container& operator =(const Container& contAssign)
+	Container& operator =(const Container& assignCopy) //копирующий оператор присваивания
 	{
-		if (this != &contAssign) {
+		if (this != &assignCopy) {
 			this->~Container();
-			new (this) Container(contAssign);
-			//head = contAssign.head;
-			//tail = contAssign.tail;
+			new (this) Container(assignCopy); //нашел, где-то в нете такую реализацию оператора присваивания, но вот эффективно ли это хз
 		}
+		return *this;
+	}
+
+	Container& operator =(Container&& assignMove) //перемещающий оператор присваивания
+	{
+		if (this != &assignMove) {
+			this->~Container();
+			new (this) Container(move(assignMove)); //почему без move вызывается конструктор копирования, а не конструктор перемещения, ведь assignMove по сути является rvalue-ссылкой?
+		}
+		assignMove.tail = assignMove.head = nullptr;
 		return *this;
 	}
 
@@ -92,5 +105,4 @@ public:
 			tail = head = newElem;
 		}
 	}
-
 };
