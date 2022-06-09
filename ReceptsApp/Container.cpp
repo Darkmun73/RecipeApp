@@ -10,7 +10,7 @@
 template <typename T>
 class Container
 {
-	//юзинги лучше в приват или паблик кидать? (странный вопрос, наверное)
+	//СЋР·РёРЅРіРё Р»СѓС‡С€Рµ РІ РїСЂРёРІР°С‚ РёР»Рё РїР°Р±Р»РёРє РєРёРґР°С‚СЊ? (СЃС‚СЂР°РЅРЅС‹Р№ РІРѕРїСЂРѕСЃ, РЅР°РІРµСЂРЅРѕРµ)
 	//using iterator Iterator;
 	/*using value_type = T;
 	using reference = T&;
@@ -18,19 +18,19 @@ class Container
 	using difference_type = std::ptrdiff_t;*/
 
 private:
-	//не лучше ли структуру написать вне класса?
-	struct Elem //элемент списка
+	//РЅРµ Р»СѓС‡С€Рµ Р»Рё СЃС‚СЂСѓРєС‚СѓСЂСѓ РЅР°РїРёСЃР°С‚СЊ РІРЅРµ РєР»Р°СЃСЃР°?
+	struct Elem //ГЅГ«ГҐГ¬ГҐГ­ГІ Г±ГЇГЁГ±ГЄГ 
 	{
 		T _value;
-		Elem* _next; //след элемент списка
-		Elem* _prev; //пред элемент списка
+		Elem* _next; //Г±Г«ГҐГ¤ ГЅГ«ГҐГ¬ГҐГ­ГІ Г±ГЇГЁГ±ГЄГ 
+		Elem* _prev; //ГЇГ°ГҐГ¤ ГЅГ«ГҐГ¬ГҐГ­ГІ Г±ГЇГЁГ±ГЄГ 
 		Elem() : _value(0), _next(nullptr), _prev(nullptr) {}
 		Elem(T value, Elem* prev, Elem* next) : _value(value), _prev(prev), _next(next) {};
 	};
 	Elem* head;
 	Elem* tail;
 
-	////итератор - public или private?
+	////ГЁГІГҐГ°Г ГІГ®Г° - public ГЁГ«ГЁ private?
 	//class Iterator
 	//{
 
@@ -39,13 +39,13 @@ private:
 public:
 	Container() : head(nullptr), tail(nullptr) {};
 
-	Container(const T& value)  //инициализация контейнера с одним элементом со значение value
+	Container(const T& value)  //ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГї ГЄГ®Г­ГІГҐГ©Г­ГҐГ°Г  Г± Г®Г¤Г­ГЁГ¬ ГЅГ«ГҐГ¬ГҐГ­ГІГ®Г¬ Г±Г® Г§Г­Г Г·ГҐГ­ГЁГҐ value
 	{
 		head = new Elem(value, nullptr, nullptr);
 		tail = head;
 	}
 
-	Container(const Container& contCopy) //конструктор копирования
+	Container(const Container& contCopy) //ГЄГ®Г­Г±ГІГ°ГіГЄГІГ®Г° ГЄГ®ГЇГЁГ°Г®ГўГ Г­ГЁГї
 	{
 		tail = head = nullptr;
 		Elem* cur = contCopy.head;
@@ -54,7 +54,7 @@ public:
 			push_back(cur->_value);
 			cur = cur->_next;
 		}
-		delete cur; //есть ли смысл удалять, если cur и так уже nullptr?
+		delete cur; //ГҐГ±ГІГј Г«ГЁ Г±Г¬Г»Г±Г« ГіГ¤Г Г«ГїГІГј, ГҐГ±Г«ГЁ cur ГЁ ГІГ ГЄ ГіГ¦ГҐ nullptr?
 	}
 
 	~Container()
