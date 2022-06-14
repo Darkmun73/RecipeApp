@@ -143,12 +143,12 @@ public:
 			tail->_next = newElem;
 			newElem->_prev = tail;
 			tail = newElem;
-			tail->_next = new Node(NULL, tail, nullptr); //фиктивный элемент для end()
+			tail->_next = new Node(T() , tail, nullptr); //фиктивный элемент для end()
 		}
 		else
 		{
 			tail = head = newElem;
-			tail->_next = new Node(NULL, tail, nullptr); //фиктивный элемент для end()
+			tail->_next = new Node(T() , tail, nullptr); //фиктивный элемент для end()
 		}
 	}
 
