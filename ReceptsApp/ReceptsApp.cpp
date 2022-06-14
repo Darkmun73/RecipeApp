@@ -11,6 +11,11 @@ inline size_t arraySize(const T(&arr)[n])
 
 const std::string nameOfAllIngredientsInGramms[5] = { "Пшеничная мука", "Соль", "Сахар", "Moloko", "Масло" };
 const std::string nameOfAllIngredientsInNumber[5] = { "Куриное яйцо", "Яблоко", "Морковь", "Баклажан", "Клубника" };
+
+class Category;
+MyBidirectionalList<Category> allCategories;
+
+
 //std::multimap<std::string, std::string> category;
 //std::string* categoryArray = {"Молочные"}
 
@@ -40,57 +45,76 @@ const std::string nameOfAllIngredientsInNumber[5] = { "Куриное яйцо",
 	getAmountInNumber(int totalWeight, Ingr)
 		return total / ingr.getWeigth()
 	*/
+class Category
+{
+private:
+	std::string _name;
+	std::vector<std::string> _ingredients;
+public:
+	Category() : _name("nonameCategory"), _ingredients(std::vector<std::string>()) { }
+	Category(std::string name) : _name(name), _ingredients(std::vector<std::string>()) { }
+	Category(std::string name, std::vector<std::string> ingredients) : _name(name), _ingredients(ingredients) { }
+	~Category() {}
 
+	void setName(std::string name)
+	{
+		_name = name;
+	}
+
+	std::string getName()
+	{
+		return _name;
+	}
+
+	std::vector<std::string>& getIngredients() //надеюсь то, что я сделал геттер с ссылкой, это норма
+	{
+		return _ingredients;
+	}
+};
 
 class Ingredient
 {
 private:
 	std::string _name;
-	std::string _category;
+	Category _category;
 public:
-	void setIngredient(std::string name)
+	Ingredient(std::string name)
 	{
-		//std::multimap<std::string, std::string>::iterator it1;
-		for (size_t i = 0; i < sizeof(nameOfAllIngredientsInGramms)/sizeof(nameOfAllIngredientsInGramms[0]); i++)
-		{
-			if (name == nameOfAllIngredientsInGramms[i])
+		MyBidirectionalList<Category>::iterator iter;
+
+		//Среди всех категорий из allCategories ищу ту, в которой есть имя name ингредиента.
+		iter = std::find_if(allCategories.begin(), allCategories.end(),
+			[name](Category categ)
 			{
-				_name = name;
-				/*for (auto it = category.begin(); it != category.end(); it++)
-				{
-					if (it->second == name)
-					{
-						it1 = it;
-						break;
-					}
-						
-				}*/
+				return std::find(categ.getIngredients().begin(), categ.getIngredients().end(), name) != categ.getIngredients().end();
 			}
-		}
-
-		for (size_t i = 0; i < sizeof(nameOfAllIngredientsInNumber)/sizeof(nameOfAllIngredientsInNumber[0]); i++)
+		); 
+		
+		//Если такая категория есть, то...
+		if (iter != allCategories.end())
 		{
-			if (name == nameOfAllIngredientsInNumber[i])
-			{
-				_name = name;
-				/*for (auto it = category.begin(); it != category.end(); it++)
-				{
-					if (it->second == name)
-					{
-						it1 = it;
-						break;
-					}
-
-				}*/
-			}
+			_name = name;
+			_category = *iter;
 		}
+		else //если - нет, то...
+		{
+			_name = "nonameIngredient";
+		}
+	}
 
-		//_category = it1->first;
+	std::string getName()
+	{
+		return _name;
+	}
+
+	Category getCategory()
+	{
+		return _category;
 	}
 
 	void ingredientOut()
 	{
-		std::cout << std::endl << _name << std::endl << _category << std::endl;
+		std::cout << std::endl << _name << std::endl << _category.getName() << std::endl;
 	}
 };
 
@@ -129,15 +153,7 @@ public:
 	}
 };
 
-class Category
-{
-private:
-	std::string _name = "noname";
-	std::vector<Ingredient> _ingredients;
-public:
-	Category(std::string name) : _name(name), _ingredients(std::vector<Ingredient>()) { }
-	~Category() {}
-};
+
 
 class Recipe
 {
@@ -172,65 +188,65 @@ public:
 		}
 	}
 
-	void addIngredient(std::string nameOfIngredient)
-	{
-		bool error = false;
-		IngredientWithAmountInGramms ingredientGr;
-		IngredientWithAmountInNumber ingredientNum;
-	/*	while (stillNeedIngredient)
-		{
-			std::cout << "Назовите ингредиент, необходимый для приготовления блюда: ";
-			std::cin >> nameOfIngredient;*/
-			for (size_t i = 0; i < sizeof(nameOfAllIngredientsInGramms) / sizeof(nameOfAllIngredientsInGramms[0]); i++)
-			{
-				if (nameOfIngredient == nameOfAllIngredientsInGramms[i]) // поиск введеного ингредиента в константном массиве,
-				{														 // состоящем из всех доступных приложению ингредиентов определенных в граммах
-					ingredientGr.setIngredient(nameOfIngredient);
-					_ingredientsInGramms.push_back(ingredientGr);
-					error = false;
-					return;
-				}
-				else if (nameOfIngredient == nameOfAllIngredientsInNumber[i]) // тут то же самое, но ингр.-ты определены в "штуках"
-				{
-					ingredientNum.setIngredient(nameOfIngredient);
-					_ingredientsInNumber.push_back(ingredientNum);
-					error = false;
-					return;
-				}
-				error = true;  // "мнимый" error. Становится "настоящим" только, если это присваивание выполняется на последней итерации цикла
-			}
+	//void addIngredient(std::string nameOfIngredient)
+	//{
+	//	bool error = false;
+	//	IngredientWithAmountInGramms ingredientGr;
+	//	IngredientWithAmountInNumber ingredientNum;
+	///*	while (stillNeedIngredient)
+	//	{
+	//		std::cout << "Назовите ингредиент, необходимый для приготовления блюда: ";
+	//		std::cin >> nameOfIngredient;*/
+	//		for (size_t i = 0; i < sizeof(nameOfAllIngredientsInGramms) / sizeof(nameOfAllIngredientsInGramms[0]); i++)
+	//		{
+	//			if (nameOfIngredient == nameOfAllIngredientsInGramms[i]) // поиск введеного ингредиента в константном массиве,
+	//			{														 // состоящем из всех доступных приложению ингредиентов определенных в граммах
+	//				ingredientGr.setIngredient(nameOfIngredient);
+	//				_ingredientsInGramms.push_back(ingredientGr);
+	//				error = false;
+	//				return;
+	//			}
+	//			else if (nameOfIngredient == nameOfAllIngredientsInNumber[i]) // тут то же самое, но ингр.-ты определены в "штуках"
+	//			{
+	//				ingredientNum.setIngredient(nameOfIngredient);
+	//				_ingredientsInNumber.push_back(ingredientNum);
+	//				error = false;
+	//				return;
+	//			}
+	//			error = true;  // "мнимый" error. Становится "настоящим" только, если это присваивание выполняется на последней итерации цикла
+	//		}
 
-			if (error == true)
-			{
-				std::cout << "Ошибка: bad input" << std::endl;
-			}
+	//		if (error == true)
+	//		{
+	//			std::cout << "Ошибка: bad input" << std::endl;
+	//		}
 
-			/*error = false;
-			do 
-			{
-				char yesOrNo;
-				std::cout << "Хотите ли назвать еще ингредиент? (Y/N): ";
-				std::cin >> yesOrNo;
-				switch (yesOrNo)
-				{
-				case('Y'):
-					break;
-				case('y'):
-					break;
-				case('N'):
-					stillNeedIngredient = false;
-					break;
-				case('n'):
-					stillNeedIngredient = false;
-					break;
-				default:
-					error = true;
-					std::cout << "Ошибка: bad input";
-					break;
-				}
-			} while (error);*/
-		//}
-	}
+	//		/*error = false;
+	//		do 
+	//		{
+	//			char yesOrNo;
+	//			std::cout << "Хотите ли назвать еще ингредиент? (Y/N): ";
+	//			std::cin >> yesOrNo;
+	//			switch (yesOrNo)
+	//			{
+	//			case('Y'):
+	//				break;
+	//			case('y'):
+	//				break;
+	//			case('N'):
+	//				stillNeedIngredient = false;
+	//				break;
+	//			case('n'):
+	//				stillNeedIngredient = false;
+	//				break;
+	//			default:
+	//				error = true;
+	//				std::cout << "Ошибка: bad input";
+	//				break;
+	//			}
+	//		} while (error);*/
+	//	//}
+	//}
 
 	void recipeOut()
 	{
@@ -262,12 +278,15 @@ public:
 int main()
 {
 	setlocale(LC_ALL, "ru");
-	auto a = 5;
+	allCategories.push_back(Category("Molochnie produkty", { "Moloko", "Maslo", "Cheese" }));
+	Ingredient a("asd");
+	std::cout << a.getName() << " " << a.getCategory().getName() << std::endl;
+	/*auto a = 5;
 	Recipe Tort;
 	Tort.setNumberOfSteps(1);
 	Tort.setSteps({ "asdasd" });
 	Tort.addIngredient("Moloko");
-	Tort.recipeOut();
+	Tort.recipeOut();*/
 	//muka.setNumberOfSteps(4);
 	//muka.setSteps();
 	return 0;
