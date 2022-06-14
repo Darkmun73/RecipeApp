@@ -3,7 +3,6 @@
 #include <string>
 #include "Container.cpp"
 
-
 template<typename T, size_t n>
 inline size_t arraySize(const T(&arr)[n])
 {
@@ -130,6 +129,15 @@ public:
 	}
 };
 
+class Category
+{
+private:
+	std::string _name = "noname";
+	std::vector<Ingredient> _ingredients;
+public:
+	Category(std::string name) : _name(name), _ingredients(std::vector<Ingredient>()) { }
+	~Category() {}
+};
 
 class Recipe
 {

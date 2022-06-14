@@ -3,9 +3,6 @@
 #include <string>
 #include <iterator>
 #include <list>
-//#include "MyBidirectionalList.h"
-
-
 
 template <typename T>
 class MyBidirectionalList
@@ -38,7 +35,7 @@ public:
 
 public:
 	//Дефолтный конструктор
-	MyBidirectionalList() : head(nullptr), tail(nullptr) {};
+	MyBidirectionalList() : head(nullptr), tail(nullptr) {}
 
 	//Конструктор копирования
 	MyBidirectionalList(const MyBidirectionalList& ctorCopy)
@@ -108,10 +105,6 @@ public:
 		return tail == nullptr ? nullptr : const_iterator(tail->_next);
 	}
 
-	size_type size() const { return std::distance(this->begin(), this->end()); }
-	size_type max_size() const { return (size_type)-1; }	//Я знаю, что это скорее всего неверно, но как подругому узнать max_size я не знаю.
-															//Можно конечно в бесконечном цикле это проверить, пока программа не сломается, но это долго
-
 	const bool operator==(const MyBidirectionalList& other) const
 	{
 		if (this->size() == other.size())
@@ -127,6 +120,12 @@ public:
 	}
 	const bool operator!=(const MyBidirectionalList& other) const { return !(operator ==(other)); }
 
+	size_type size() const { return std::distance(this->begin(), this->end()); }
+	size_type max_size() const { return (size_type)-1; }	//Я знаю, что это скорее всего неверно, но как подругому узнать max_size я не знаю.
+															//Можно конечно в бесконечном цикле это проверить, пока программа не сломается, но это долго
+
+	bool empty() const { return this->begin() == this->end(); }
+
 	//Меняет местами контейнеры *this и other
 	void swap(MyBidirectionalList& other)
 	{
@@ -134,7 +133,6 @@ public:
 		*this = move(other);
 		other = move(temp);
 	}
-
 
 	//Добавление элемента со значение value в конец
 	void push_back(T value)
