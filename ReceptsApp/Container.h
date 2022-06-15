@@ -8,15 +8,13 @@
 template <typename T>
 class MyBidirectionalList
 {
-	//юзинги лучше в приват или паблик кидать? (странный вопрос, наверное)
-
 private:
 	//не лучше ли структуру написать вне класса? ’от€, тогда она, по сути, будет public, а этого нам не нужно?
-	struct Node //элемент списка
+	struct Node
 	{
 		T _value;
-		Node* _next; //след элемент списка
-		Node* _prev; //пред элемент списка
+		Node* _next;
+		Node* _prev;
 		Node(T value, Node* prev, Node* next) : _value(value), _prev(prev), _next(next) {};
 	};
 	Node* head;
@@ -48,14 +46,14 @@ public:
 			push_back(cur->_value);
 			cur = cur->_next;
 		}
-		delete cur; //нужно ли удал€ть cur, если он и так стал nullptr?
+		delete cur; //нужно ли удал€ть cur, если он и так стал nullptr? Ќу, € так понимаю - нет
 	}
 
 	// онструктор перемещени€
 	MyBidirectionalList(MyBidirectionalList&& ctorMove) : head(ctorMove.head), tail(ctorMove.tail)
 	{
 		ctorMove.tail = ctorMove.head = nullptr;
-	} //есть вопрос по конструктуру перемещени€
+	}
 
 	//ƒеструктор
 	~MyBidirectionalList()
@@ -73,7 +71,7 @@ public:
 	{
 		if (this != &assignCopy) {
 			this->~MyBidirectionalList();
-			new (this) MyBidirectionalList(assignCopy); //нашел, где-то в нете такую реализацию оператора присваивани€, но вот эффективно ли это хз
+			new (this) MyBidirectionalList(assignCopy); //нашел, где-то в нете такую реализацию оператора присваивани€, и решил попробовать) но вот эффективно ли это хз
 		}
 		return *this;
 	}
@@ -83,12 +81,14 @@ public:
 	{
 		if (this != &assignMove) {
 			this->~MyBidirectionalList();
-			new (this) MyBidirectionalList(move(assignMove)); //почему без move вызываетс€ конструктор копировани€, а не конструктор перемещени€, ведь assignMove по сути €вл€етс€ rvalue-ссылкой?
+			new (this) MyBidirectionalList(move(assignMove));	//Ѕез move вызываетс€ конструктор копировани€, а не конструктор перемещени€.
+																//ѕочему так? ¬едь assignMove €вл€етс€ rvalue-ссылкой ?
 			assignMove.tail = assignMove.head = nullptr;
 		}
 		return *this;
 	}
 
+#pragma region Begin_end
 	iterator begin() const  //сделал const, потому что в ином случае не работает operator==
 	{
 		return iterator(head);
@@ -105,6 +105,7 @@ public:
 	{
 		return tail == nullptr ? nullptr : const_iterator(tail->_next);
 	}
+#pragma endregion
 
 	const bool operator==(const MyBidirectionalList& other) const
 	{
@@ -194,12 +195,12 @@ public:
 			return *this;
 		}
 
-		reference operator*() const { return _ptr->_value; } //здесь разве не нужно какую-нибудь проверку устраивать на то, если _ptr == nullptr?
+		reference operator*() const { return _ptr->_value; }	//здесь разве не нужно какую-нибудь проверку устраивать на то, если _ptr == nullptr?
 		pointer operator->() const { return &(_ptr->_value); }
 
 		const_BilistIterator& operator++()
 		{
-			if (_ptr)
+			if (_ptr)											//и если выше не нужно, то нужно ли здесь?
 				_ptr = _ptr->_next;
 			return *this;
 		}
@@ -254,7 +255,7 @@ public:
 			_ptr = it._ptr;
 			return *this;
 		}
-		reference operator*() const { return _ptr->_value; } //здесь разве не нужно какую-нибудь проверку устраивать на то, если _ptr == nullptr?
+		reference operator*() const { return _ptr->_value; }
 		pointer operator->() const { return &(_ptr->_value); }
 
 		BilistIterator& operator++()
