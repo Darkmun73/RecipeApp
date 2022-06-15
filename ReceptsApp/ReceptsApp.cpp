@@ -1,7 +1,8 @@
 ﻿#include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
-#include "Container.cpp"
+#include "Container.h"
 
 template<typename T, size_t n>
 inline size_t arraySize(const T(&arr)[n])
@@ -9,24 +10,23 @@ inline size_t arraySize(const T(&arr)[n])
 	return n;
 }
 
-const std::string nameOfAllIngredientsInGramms[5] = { "Пшеничная мука", "Соль", "Сахар", "Moloko", "Масло" };
-const std::string nameOfAllIngredientsInNumber[5] = { "Куриное яйцо", "Яблоко", "Морковь", "Баклажан", "Клубника" };
-
 class Category;
+class Ingredient;
 MyBidirectionalList<Category> allCategories;
 
+class User
+{
+private:
+	std::string _nickname = "Guest";
+	unsigned int id = NULL;
 
-//std::multimap<std::string, std::string> category;
-//std::string* categoryArray = {"Молочные"}
-
-//
-//class User
-//{
-//private:
-//
-//public:
-//
-//};
+public:
+	User(std::string nickname) : _nickname(nickname)
+	{
+		srand(time(0));
+		id = rand(); //понимаю, что так не правильно делать
+	}
+};
 //
 //class App //нормально ли что приложение одно, но так как это класс, то можно создать несколько объектов 
 //{
@@ -49,11 +49,11 @@ class Category
 {
 private:
 	std::string _name;
-	std::vector<std::string> _ingredients;
+	std::vector<Ingredient> _ingredients;
 public:
-	Category() : _name("nonameCategory"), _ingredients(std::vector<std::string>()) { }
-	Category(std::string name) : _name(name), _ingredients(std::vector<std::string>()) { }
-	Category(std::string name, std::vector<std::string> ingredients) : _name(name), _ingredients(ingredients) { }
+	Category() : _name("nonameCategory"), _ingredients(std::vector<Ingredient>()) { }
+	Category(std::string name) : _name(name), _ingredients(std::vector<Ingredient>()) { }
+	Category(std::string name, std::vector<Ingredient> ingredients) : _name(name), _ingredients(ingredients) { }
 	~Category() {}
 
 	void setName(std::string name)
@@ -66,7 +66,7 @@ public:
 		return _name;
 	}
 
-	std::vector<std::string>& getIngredients() //надеюсь то, что я сделал геттер с ссылкой, это норма
+	std::vector<Ingredient>& getIngredients() //надеюсь то, что я сделал геттер с ссылкой, это норма
 	{
 		return _ingredients;
 	}
@@ -76,30 +76,44 @@ class Ingredient
 {
 private:
 	std::string _name;
-	Category _category;
+	std::string _category = "nonameCategory";
+	int _amount = NULL;
+
 public:
-	Ingredient(std::string name)
+	Ingredient(std::string name, std::string category) : _name(name), _category(category) {}
+
+	Ingredient(std::string name = "nonameIngredient")
 	{
 		MyBidirectionalList<Category>::iterator iter;
 
-		//Среди всех категорий из allCategories ищу ту, в которой есть имя name ингредиента.
+		//Среди всех категорий из allCategories ищу ту, в которой есть название name ингредиента.
 		iter = std::find_if(allCategories.begin(), allCategories.end(),
 			[name](Category categ)
 			{
-				return std::find(categ.getIngredients().begin(), categ.getIngredients().end(), name) != categ.getIngredients().end();
+				return std::find_if(categ.getIngredients().begin(), categ.getIngredients().end(), //здесь ищем ингредиент с названием name
+					[name](Ingredient ingr) 
+					{ 
+						return ingr.getName() == name;
+					}
+				) != categ.getIngredients().end(); //если найден, то true, в противном случае false
 			}
-		); 
+		); //здесь find_if в find_if'е, если так можно выразиться)) прошу прощения, если сложно прочитать
 		
 		//Если такая категория есть, то...
 		if (iter != allCategories.end())
 		{
 			_name = name;
-			_category = *iter;
+			_category = iter->getName();
 		}
 		else //если - нет, то...
 		{
 			_name = "nonameIngredient";
 		}
+	}
+
+	void ingredientOut()
+	{
+		std::cout << std::endl << _name << std::endl << _category << std::endl;
 	}
 
 	std::string getName()
@@ -112,56 +126,24 @@ public:
 		return _category;
 	}
 
-	void ingredientOut()
-	{
-		std::cout << std::endl << _name << std::endl << _category.getName() << std::endl;
-	}
-};
-
-
-class IngredientWithAmountInGramms : public Ingredient
-{
-private:
-	int _amountGramms;
-public:
-
 	int getAmount()
 	{
-		return _amountGramms;
+		return _amount;
 	}
 
-	void setAmount(int amountGramms)
+	void setAmount(int amount)
 	{
-		_amountGramms = amountGramms;
+		_amount = amount;
 	}
 };
-
-class IngredientWithAmountInNumber : public Ingredient
-{
-private:
-	int _amountNumber;
-public:
-
-	int getAmount()
-	{
-		return _amountNumber;
-	}
-
-	void setAmount(int amountNumber)
-	{
-		_amountNumber = amountNumber;
-	}
-};
-
-
 
 class Recipe
 {
 private:
-	std::vector<IngredientWithAmountInGramms> _ingredientsInGramms;
-	std::vector<IngredientWithAmountInNumber> _ingredientsInNumber;
+	std::vector<Ingredient> _ingredients;
 	unsigned int _numberOfSteps;   //число шагов приготовления блюда
 	std::vector<std::string> _steps; //описание шагов приготовления блюда
+
 public:
 	//Recipe() : _numberOfSteps(0) {}
 	
@@ -275,12 +257,72 @@ public:
 	}
 };
 
+void split(std::string str, std::vector<std::string>& data)
+{
+	while (!str.empty())
+	{
+		auto word_end = str.find("  ");
+		if (word_end == -1)
+		{
+			data.push_back(str);
+			str.clear();
+		}
+		else
+		{
+			data.push_back(str.substr(0, word_end));
+			str.erase(0, word_end + 2);
+		}
+	}
+}
+
+//Заполнение контейнера со всеми категориями ингредиентов (и самими ингредиентами внутри каждой категории)
+void fillAllCategories()
+{
+	std::ifstream CategoriesIn("Categories.txt");
+	if (CategoriesIn.fail())
+	{
+		std::cerr << "Ошибка открытия файла";
+		exit(1);
+	}
+
+	std::string temp;
+	std::vector<std::string> ingr;
+	allCategories.push_back(Category());
+	MyBidirectionalList<Category>::iterator iter = allCategories.begin();
+
+	while (!CategoriesIn.eof())
+	{
+
+		std::getline(CategoriesIn, temp);
+		split(temp, ingr);
+		iter->setName(ingr[0]);
+		for (auto& i : ingr)
+		{
+			if (i != ingr[0])
+			{
+				iter->getIngredients().push_back(Ingredient(i, ingr[0]));
+			}
+		}
+		allCategories.push_back(Category());
+		iter++;
+		ingr.clear();
+	}
+	allCategories.pop_back();
+}
+
 int main()
 {
 	setlocale(LC_ALL, "ru");
-	allCategories.push_back(Category("Molochnie produkty", { "Moloko", "Maslo", "Cheese" }));
-	Ingredient a("asd");
-	std::cout << a.getName() << " " << a.getCategory().getName() << std::endl;
+	fillAllCategories();
+	for (auto iter = allCategories.begin(); iter != allCategories.end(); iter++)
+	{
+		std::cout << iter->getName() << " ";
+		for (auto iter1 = iter->getIngredients().begin(); iter1 != iter->getIngredients().end(); iter1++)
+		{
+			std::cout << iter1->getName() << " ";
+		}
+		std::cout << std::endl;
+	}
 	/*auto a = 5;
 	Recipe Tort;
 	Tort.setNumberOfSteps(1);
@@ -293,4 +335,3 @@ int main()
 }
 
 //хочу, чтобы где-то была куча ингредиентов и в рецпте мы могли бы выбрать, какие из них есть используются в приготовлении блюда
-//узнать про cout в методах класса
