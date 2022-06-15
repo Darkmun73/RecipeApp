@@ -27,24 +27,7 @@ public:
 		id = rand(); //понимаю, что так не правильно делать
 	}
 };
-//
-//class App //нормально ли что приложение одно, но так как это класс, то можно создать несколько объектов 
-//{
-//
-//};
-//
-//class Dish
-//{
-//
-//};
 
-/*
-	struct AmountCOnverter
-	getAmountInGramms(Ingredients, int count )
-
-	getAmountInNumber(int totalWeight, Ingr)
-		return total / ingr.getWeigth()
-	*/
 class Category
 {
 private:
@@ -72,34 +55,21 @@ public:
 	}
 };
 
+
+MyBidirectionalList<Category>::iterator& findNameOfIngredient(std::string);
 class Ingredient
 {
 private:
 	std::string _name;
 	std::string _category = "nonameCategory";
-	int _amount = NULL;
 
 public:
 	Ingredient(std::string name, std::string category) : _name(name), _category(category) {}
-
 	Ingredient(std::string name = "nonameIngredient")
 	{
-		MyBidirectionalList<Category>::iterator iter;
-
-		//Среди всех категорий из allCategories ищу ту, в которой есть название name ингредиента.
-		iter = std::find_if(allCategories.begin(), allCategories.end(),
-			[name](Category categ)
-			{
-				return std::find_if(categ.getIngredients().begin(), categ.getIngredients().end(), //здесь ищем ингредиент с названием name
-					[name](Ingredient ingr) 
-					{ 
-						return ingr.getName() == name;
-					}
-				) != categ.getIngredients().end(); //если найден, то true, в противном случае false
-			}
-		); //здесь find_if в find_if'е, если так можно выразиться)) прошу прощения, если сложно прочитать
+		MyBidirectionalList<Category>::iterator iter = findNameOfIngredient(name);
 		
-		//Если такая категория есть, то...
+		//Если есть категория, в которой есть ингредиент с названием name, то...
 		if (iter != allCategories.end())
 		{
 			_name = name;
@@ -113,7 +83,7 @@ public:
 
 	void ingredientOut()
 	{
-		std::cout << std::endl << _name << std::endl << _category << std::endl;
+		std::cout << _name << std::endl;
 	}
 
 	std::string getName()
@@ -125,28 +95,37 @@ public:
 	{
 		return _category;
 	}
-
-	int getAmount()
-	{
-		return _amount;
-	}
-
-	void setAmount(int amount)
-	{
-		_amount = amount;
-	}
 };
 
-class Recipe
+//Среди всех категорий из allCategories ищу ту, в которой есть название nameOfIngredient ингредиента.
+MyBidirectionalList<Category>::iterator& findNameOfIngredient(std::string nameOfIngredient)
+{
+	MyBidirectionalList<Category>::iterator iter;
+
+	iter = std::find_if(allCategories.begin(), allCategories.end(),
+		[nameOfIngredient](Category categ)
+		{
+			return std::find_if(categ.getIngredients().begin(), categ.getIngredients().end(), //здесь ищем ингредиент с названием name
+				[nameOfIngredient](Ingredient ingr)
+				{
+					return ingr.getName() == nameOfIngredient;
+				}
+			) != categ.getIngredients().end(); //если найден, то true, в противном случае false
+		}
+	);	//здесь find_if в find_if'е, если так можно выразиться)) прошу прощения, если сложно прочитать
+
+	return iter;
+}
+
+class Recipe //названия блюда по которому написан рецепт должно быть в классе Dish, но я пока не успел его реализовать(
 {
 private:
 	std::vector<Ingredient> _ingredients;
-	unsigned int _numberOfSteps;   //число шагов приготовления блюда
-	std::vector<std::string> _steps; //описание шагов приготовления блюда
+	unsigned int _numberOfSteps;   //число шагов в рецепте
+	std::vector<std::string> _steps; //описание шагов в рецепте
 
 public:
-	//Recipe() : _numberOfSteps(0) {}
-	
+	Recipe() : _numberOfSteps(0) {}
 
 	void setNumberOfSteps(unsigned int numberOfSteps)
 	{
@@ -170,91 +149,46 @@ public:
 		}
 	}
 
-	//void addIngredient(std::string nameOfIngredient)
-	//{
-	//	bool error = false;
-	//	IngredientWithAmountInGramms ingredientGr;
-	//	IngredientWithAmountInNumber ingredientNum;
-	///*	while (stillNeedIngredient)
-	//	{
-	//		std::cout << "Назовите ингредиент, необходимый для приготовления блюда: ";
-	//		std::cin >> nameOfIngredient;*/
-	//		for (size_t i = 0; i < sizeof(nameOfAllIngredientsInGramms) / sizeof(nameOfAllIngredientsInGramms[0]); i++)
-	//		{
-	//			if (nameOfIngredient == nameOfAllIngredientsInGramms[i]) // поиск введеного ингредиента в константном массиве,
-	//			{														 // состоящем из всех доступных приложению ингредиентов определенных в граммах
-	//				ingredientGr.setIngredient(nameOfIngredient);
-	//				_ingredientsInGramms.push_back(ingredientGr);
-	//				error = false;
-	//				return;
-	//			}
-	//			else if (nameOfIngredient == nameOfAllIngredientsInNumber[i]) // тут то же самое, но ингр.-ты определены в "штуках"
-	//			{
-	//				ingredientNum.setIngredient(nameOfIngredient);
-	//				_ingredientsInNumber.push_back(ingredientNum);
-	//				error = false;
-	//				return;
-	//			}
-	//			error = true;  // "мнимый" error. Становится "настоящим" только, если это присваивание выполняется на последней итерации цикла
-	//		}
-
-	//		if (error == true)
-	//		{
-	//			std::cout << "Ошибка: bad input" << std::endl;
-	//		}
-
-	//		/*error = false;
-	//		do 
-	//		{
-	//			char yesOrNo;
-	//			std::cout << "Хотите ли назвать еще ингредиент? (Y/N): ";
-	//			std::cin >> yesOrNo;
-	//			switch (yesOrNo)
-	//			{
-	//			case('Y'):
-	//				break;
-	//			case('y'):
-	//				break;
-	//			case('N'):
-	//				stillNeedIngredient = false;
-	//				break;
-	//			case('n'):
-	//				stillNeedIngredient = false;
-	//				break;
-	//			default:
-	//				error = true;
-	//				std::cout << "Ошибка: bad input";
-	//				break;
-	//			}
-	//		} while (error);*/
-	//	//}
-	//}
+	void addIngredient(std::string nameOfIngredient)
+	{
+		MyBidirectionalList<Category>::iterator iter = findNameOfIngredient(nameOfIngredient);
+		if (iter != allCategories.end())
+		{
+			_ingredients.push_back(Ingredient(nameOfIngredient, iter->getName()));
+		}
+		else
+		{
+			std::cout << "Ошибка: такого ингредиента нет в базе" << std::endl;
+		}
+	}
 
 	void recipeOut()
 	{
-		//size_t sizeOfSteps = sizeof(_steps) / sizeof(_steps[0]);  //либо надо проверить пустой ли steps?
-		if ((_ingredientsInGramms.empty() && _ingredientsInNumber.empty()) || _steps.empty())
+		if (_ingredients.empty() || _steps.empty())
 		{
 			std::cout << "Ошибка: у рецепта не заданы ингредиенты или шаги приготовления" << std::endl;
 		}
 		else
 		{
-			std::cout << "Используемые ингредиетнты: ";
-			for (size_t i = 0; i < _ingredientsInGramms.size(); i++)
+			std::cout << "Используемые ингредиетнты: " << std::endl;
+			for (size_t i = 0; i < _ingredients.size(); i++)
 			{
-				_ingredientsInGramms[i].ingredientOut();
+				_ingredients[i].ingredientOut();
 			}
-			for (size_t i = 0; i < _ingredientsInNumber.size(); i++)
-			{
-				_ingredientsInNumber[i].ingredientOut();
-			}
-			std::cout << "Шаги приготовления: " << std::endl;
+			std::cout << std::endl << "Шаги приготовления: " << std::endl;
 			for (size_t i = 0; i < _steps.size(); i++)
 			{
 				std::cout << i+1 << ". " << _steps[i] << std::endl;
 			}
+			std::cout << "----------------" << std::endl;
 		}
 	}
+};
+
+//будущий класс блюда
+class Dish
+{
+
 };
 
 void split(std::string str, std::vector<std::string>& data)
@@ -275,7 +209,7 @@ void split(std::string str, std::vector<std::string>& data)
 	}
 }
 
-//Заполнение контейнера со всеми категориями ингредиентов (и самими ингредиентами внутри каждой категории)
+//Заполнение контейнера allCategories со всеми категориями ингредиентов (и самими ингредиентами внутри каждой категории)
 void fillAllCategories()
 {
 	std::ifstream CategoriesIn("Categories.txt");
@@ -314,23 +248,16 @@ int main()
 {
 	setlocale(LC_ALL, "ru");
 	fillAllCategories();
-	for (auto iter = allCategories.begin(); iter != allCategories.end(); iter++)
-	{
-		std::cout << iter->getName() << " ";
-		for (auto iter1 = iter->getIngredients().begin(); iter1 != iter->getIngredients().end(); iter1++)
-		{
-			std::cout << iter1->getName() << " ";
-		}
-		std::cout << std::endl;
-	}
-	/*auto a = 5;
 	Recipe Tort;
 	Tort.setNumberOfSteps(1);
 	Tort.setSteps({ "asdasd" });
-	Tort.addIngredient("Moloko");
-	Tort.recipeOut();*/
-	//muka.setNumberOfSteps(4);
-	//muka.setSteps();
+	Tort.addIngredient("Молоко");
+	Tort.addIngredient("Говядина");
+	Tort.addIngredient("Рисовая мука");
+	Tort.recipeOut();
+
+	Tort.addIngredient("Что-то");
+	Tort.recipeOut();
 	return 0;
 }
 
