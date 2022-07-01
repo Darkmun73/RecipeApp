@@ -109,16 +109,15 @@ public:
 
 	const bool operator==(const MyBidirectionalList& other) const
 	{
-		if (this->size() == other.size())
+		bool need_to_compare = this->size() == other.size();
+		for (iterator first1 = this->begin(), first2 = other.begin(), last1 = end();
+			(first1 != last1) && need_to_compare;
+			++first1, ++first2)
 		{
-			for (iterator first1 = this->begin(), first2 = other.begin(), last1 = end(); first1 != last1; ++first1, ++first2) {
-				if (!(*first1 == *first2)) {
-					return false;
-				}
-			}
-			return true;
+			if (!(*first1 != *first2))
+				need_to_compare = false;
 		}
-		else return false;
+		return need_to_compare;
 	}
 	const bool operator!=(const MyBidirectionalList& other) const { return !(operator ==(other)); }
 
